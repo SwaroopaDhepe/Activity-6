@@ -1,0 +1,64 @@
+#include <string.h>
+#define MAX_ITEMS 100
+struct items {
+    char name[50];
+    char department[50];
+    float price;
+    float finalPrice; // Add a field to store the final price after GST
+};
+void swap(struct items *a, struct items *b) {
+    struct items temp = *a;
+    *a = *b;
+    *b = temp;
+}
+void sortItemsByPrice(struct items items[], int n) {
+    int i, j;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (items[j].price < items[j + 1].price) {
+                swap(&items[j], &items[j + 1]);
+            }
+        }
+    }
+}
+int main() {
+    int n, i;
+    printf("Enter the number of items: ");
+    scanf("%d", &n);
+    if (n <= 0 || n > MAX_ITEMS) {
+        printf("Invalid number of items! Please enter a number between 1 and %d.\n", MAX_ITEMS);
+        return 1;
+    }
+    struct items items[n]; // Declare the array to store item data
+    for (i = 0; i < n; i++) {
+        printf("\nEnter details for item %d:\n", i + 1);
+        printf("Enter name: ");
+        getchar(); // Consume leftover newline character from previous input
+        fgets(items[i].name, sizeof(items[i].name), stdin);
+        size_t len = strlen(items[i].name);
+        if (len > 0 && items[i].name[len - 1] == '\n') {
+            items[i].name[len - 1] = '\0'; // Remove newline character if present
+        }
+        printf("Enter department: ");
+        fgets(items[i].department, sizeof(items[i].department), stdin);
+        len = strlen(items[i].department);
+        if (len > 0 && items[i].department[len - 1] == '\n') {
+            items[i].department[len - 1] = '\0'; // Remove newline character if present
+        }
+        printf("Enter price: ");
+        scanf("%f", &items[i].price);
+        // Calculate GST and final price (assuming GST rate of 5%)
+        float gst = items[i].price * 0.05; // GST = 5% of the price
+        items[i].finalPrice = items[i].price + gst; // Final price = price + GST
+    }
+    sortItemsByPrice(items, n); // Sort items by price (highest to lowest)
+    // Print the items sorted by price along with the final price
+    printf("\nItem Information (Sorted by price from Highest to Lowest):\n");
+    printf("--------------------------------------------------------------------------------\n");
+    printf("%-20s %-20s %-10s %-10s\n", "Name", "Department", "Price", "Final Price(including GST)");
+    printf("--------------------------------------------------------------------------------\n");
+    for (i = 0; i < n; i++) {
+        printf("%-20s %-20s %-10.2f %-10.2f\n", items[i].name, items[i].department, items[i].price, items[i].finalPrice);
+    }
+    return 0;
+}
